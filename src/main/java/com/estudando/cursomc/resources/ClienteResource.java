@@ -1,8 +1,10 @@
 package com.estudando.cursomc.resources;
 
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.estudando.cursomc.domain.Cliente;
+import com.estudando.cursomc.dto.ClientNewDTO;
 import com.estudando.cursomc.dto.ClienteDTO;
 import com.estudando.cursomc.services.ClienteService;
 
@@ -25,13 +29,21 @@ public class ClienteResource {
 
 	@Autowired
 	private ClienteService service;
-	
+
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
 	public ResponseEntity<Cliente> find(@PathVariable Integer id) {
 		Cliente obj = service.find(id);
 		return ResponseEntity.ok().body(obj);
 	}
-	
+
+	@Transactional @RequestMapping(method = RequestMethod.POST)
+	public ResponseEntity<Void> insert(@Valid @RequestBody ClientNewDTO objDTO) {
+		Cliente obj = service.fromDTO(objDTO);
+		obj = service.insert(obj);
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("{id}").buildAndExpand(obj.getId()).toUri();
+		return ResponseEntity.created(uri).build();
+	}
+
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<Void> update(@Valid @RequestBody ClienteDTO objDTO, @PathVariable Integer id) {
 		Cliente obj = service.fromDTO(objDTO);
@@ -52,12 +64,11 @@ public class ClienteResource {
 		List<ClienteDTO> listDTO = list.stream().map(x -> new ClienteDTO(x)).collect(Collectors.toList());
 		return ResponseEntity.ok().body(listDTO);
 	}
-	
+
 	@RequestMapping(value = "/page", method = RequestMethod.GET)
-	public ResponseEntity<Page<ClienteDTO>> findPage(
-			@RequestParam(value = "page", defaultValue = "0") Integer page, 
-			@RequestParam(value = "size", defaultValue = "24") Integer size, 
-			@RequestParam(value = "direction", defaultValue = "ASC") String direction, 
+	public ResponseEntity<Page<ClienteDTO>> findPage(@RequestParam(value = "page", defaultValue = "0") Integer page,
+			@RequestParam(value = "size", defaultValue = "24") Integer size,
+			@RequestParam(value = "direction", defaultValue = "ASC") String direction,
 			@RequestParam(value = "orderBy", defaultValue = "nome") String orderBy) {
 		Page<Cliente> list = service.findPage(page, size, direction, orderBy);
 		Page<ClienteDTO> listDTO = list.map(x -> new ClienteDTO(x));
