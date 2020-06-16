@@ -27,7 +27,7 @@ public class ResourceExceptionHandler {
 	
 	@ExceptionHandler(DataIntegrityException.class)
 	public ResponseEntity<StandardError> resourceNotFound(DataIntegrityException e, HttpServletRequest request) {
-		String error = "Objeto não encontrado";
+		String error = "Erro de Integridade";
 		HttpStatus status = HttpStatus.BAD_REQUEST;
 		StandardError erro = new StandardError(Instant.now(), status.value(), error, e.getMessage(), request.getRequestURI());
 		return ResponseEntity.status(status).body(erro);
