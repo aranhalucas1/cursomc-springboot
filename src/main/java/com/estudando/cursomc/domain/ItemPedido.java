@@ -1,12 +1,15 @@
 package com.estudando.cursomc.domain;
 
 import java.io.Serializable;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 
 import com.estudando.cursomc.domain.PK.ItemPedidoPK;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 @Entity
 public class ItemPedido implements Serializable {
@@ -108,6 +111,20 @@ public class ItemPedido implements Serializable {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
+	}
+
+	public String toString() {
+		NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+		StringBuilder bd = new StringBuilder();
+		bd.append(getProduto().getNome());
+		bd.append(", Qtd: ");
+		bd.append(getQuantidade());
+		bd.append(", Preco unitario: ");
+		bd.append(nf.format(getPreco()));
+		bd.append(", Subtotal: ");
+		bd.append(nf.format(getSubTotal()));
+		bd.append("\n");
+		return bd.toString();
 	}
 
 }
