@@ -2,6 +2,8 @@ package com.estudando.cursomc.config;
 
 import java.text.ParseException;
 
+import com.estudando.cursomc.services.EmailService;
+import com.estudando.cursomc.services.SmtpEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -28,4 +30,10 @@ public class DevConfig {
 		dbService.instantiateTestDataBase();
 		return true;
 	}
+
+	@Bean
+	public EmailService emailService () {
+		return new SmtpEmailService();
+	}
+
 }
