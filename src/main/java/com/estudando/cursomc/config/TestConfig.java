@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import com.estudando.cursomc.services.DBService;
+import org.springframework.mail.javamail.JavaMailSender;
 
 @Configuration
 @Profile("test")
