@@ -4,6 +4,7 @@ import java.time.Instant;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.estudando.cursomc.services.exceptions.AuthorizationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -43,4 +44,13 @@ public class ResourceExceptionHandler {
 		}
 		return ResponseEntity.status(status).body(erro);
 	}
+
+	@ExceptionHandler(AuthorizationException.class)
+	public ResponseEntity<StandardError> resourceNotFound(AuthorizationException e, HttpServletRequest request) {
+		String error = "Acesso negado";
+		HttpStatus status = HttpStatus.FORBIDDEN;
+		StandardError erro = new StandardError(Instant.now(), status.value(), error, e.getMessage(), request.getRequestURI());
+		return ResponseEntity.status(status).body(erro);
+	}
+
 }

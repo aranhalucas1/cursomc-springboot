@@ -31,6 +31,10 @@ public class UserSS implements UserDetails {
         return authorities;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
     @Override
     public String getPassword() {
         return senha;
@@ -59,5 +63,9 @@ public class UserSS implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public boolean hasRole(Perfil perfil) {
+        return getAuthorities().contains(new SimpleGrantedAuthority(perfil.getDescricao()));
     }
 }
