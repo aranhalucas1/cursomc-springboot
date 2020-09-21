@@ -1,5 +1,6 @@
 package com.estudando.cursomc.services;
 
+import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -8,6 +9,7 @@ import com.estudando.cursomc.domain.enums.Perfil;
 import com.estudando.cursomc.security.UserSS;
 import com.estudando.cursomc.services.exceptions.AuthorizationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,6 +43,12 @@ public class ClienteService {
 
 	@Autowired
 	private S3Service s3Service;
+
+	@Autowired
+	private ImageService imageService;
+
+	@Value("${img.prefix.cliente.profile}")
+	private String prefix;
 
 	public Cliente find(Integer cod) {
 
@@ -117,12 +125,10 @@ public class ClienteService {
 		if(user == null) {
 			throw new AuthorizationException("Acesso negado");
 		}
-		URI uri = s3Service.uploadFile(multipartFile);
 
-		Optional<Cliente> cliente = repo.findById(user.getId());
-		cliente.get().setProfilePictureUrl(uri.toString());
-		repo.save(cliente.get());
-		return uri;
+		BufferedImage jpgFile = imageService.getJpgImageFromFile(multipartFile);
+		String fileName = prefix + user.getId() + ".jpg";
 
+		return s3Service.uploadFile(fileName, "image", imageService.getInputStream(jpgFile, "jpg"));
 	}
 }
